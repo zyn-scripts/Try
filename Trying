@@ -1,510 +1,705 @@
--- Language Selection GUI
+-- Services
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
-local selectedLanguage = nil
 
-local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-gui.Name = "LanguageSelector"
+-- Options Menu
+local optionsGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+optionsGui.Name = "OptionsMenu"
 
--- Main language selection frame
-local langFrame = Instance.new("Frame")
-langFrame.Size = UDim2.new(0, 400, 0, 220)
-langFrame.Position = UDim2.new(0.5, -200, 0.5, -110)
-langFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-langFrame.BorderSizePixel = 0
-langFrame.Parent = gui
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 500, 0, 280)
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -140)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = optionsGui
 
-local langCorner = Instance.new("UICorner")
-langCorner.CornerRadius = UDim.new(0, 15)
-langCorner.Parent = langFrame
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = mainFrame
 
-local langStroke = Instance.new("UIStroke")
-langStroke.Color = Color3.fromRGB(80, 80, 100)
-langStroke.Thickness = 2
-langStroke.Parent = langFrame
-
--- Title
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 60)
-title.Position = UDim2.new(0, 0, 0, 20)
+title.Size = UDim2.new(1, 0, 0, 35)
+title.Position = UDim2.new(0, 0, 0, 10)
 title.BackgroundTransparency = 1
-title.Text = "Select Language"
-title.TextColor3 = Color3.new(1, 1, 1)
+title.Text = "اختر الاعدادات"
+title.TextColor3 = Color3.fromRGB(0, 200, 255)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 22
+title.TextSize = 18
 title.TextXAlignment = Enum.TextXAlignment.Center
-title.Parent = langFrame
+title.Parent = mainFrame
 
-local subtitle = Instance.new("TextLabel")
-subtitle.Size = UDim2.new(1, 0, 0, 30)
-subtitle.Position = UDim2.new(0, 0, 0, 70)
-subtitle.BackgroundTransparency = 1
-subtitle.Text = "اختار لغتك المفضلة"
-subtitle.TextColor3 = Color3.fromRGB(180, 180, 180)
-subtitle.Font = Enum.Font.Gotham
-subtitle.TextSize = 14
-subtitle.TextXAlignment = Enum.TextXAlignment.Center
-subtitle.Parent = langFrame
+-- Variables
+local speedOption = "fast"
+local bombOption = "required"
+local backwardOption = "auto" -- auto, always, never
 
--- English button
-local englishBtn = Instance.new("TextButton")
-englishBtn.Size = UDim2.new(0, 160, 0, 50)
-englishBtn.Position = UDim2.new(0, 40, 0, 120)
-englishBtn.Text = "🇺🇸 English"
-englishBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
-englishBtn.TextColor3 = Color3.new(1, 1, 1)
-englishBtn.Font = Enum.Font.GothamBold
-englishBtn.TextSize = 16
-englishBtn.BorderSizePixel = 0
-englishBtn.Parent = langFrame
+-- Speed Section
+local speedTitle = Instance.new("TextLabel")
+speedTitle.Size = UDim2.new(0.3, 0, 0, 25)
+speedTitle.Position = UDim2.new(0.05, 0, 0, 55)
+speedTitle.BackgroundTransparency = 1
+speedTitle.Text = "السرعة"
+speedTitle.TextColor3 = Color3.new(1, 1, 1)
+speedTitle.Font = Enum.Font.GothamBold
+speedTitle.TextSize = 14
+speedTitle.TextXAlignment = Enum.TextXAlignment.Center
+speedTitle.Parent = mainFrame
 
-local englishCorner = Instance.new("UICorner")
-englishCorner.CornerRadius = UDim.new(0, 10)
-englishCorner.Parent = englishBtn
+local speedFastBtn = Instance.new("TextButton")
+speedFastBtn.Size = UDim2.new(0.27, 0, 0, 30)
+speedFastBtn.Position = UDim2.new(0.07, 0, 0, 85)
+speedFastBtn.Text = "سريع"
+speedFastBtn.TextColor3 = Color3.new(1, 1, 1)
+speedFastBtn.Font = Enum.Font.GothamBold
+speedFastBtn.TextSize = 12
+speedFastBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+speedFastBtn.BorderSizePixel = 0
+speedFastBtn.Parent = mainFrame
 
-local englishStroke = Instance.new("UIStroke")
-englishStroke.Color = Color3.fromRGB(100, 150, 200)
-englishStroke.Thickness = 1
-englishStroke.Parent = englishBtn
+local speedNormalBtn = Instance.new("TextButton")
+speedNormalBtn.Size = UDim2.new(0.27, 0, 0, 30)
+speedNormalBtn.Position = UDim2.new(0.07, 0, 0, 125)
+speedNormalBtn.Text = "بدون سرعة"
+speedNormalBtn.TextColor3 = Color3.new(1, 1, 1)
+speedNormalBtn.Font = Enum.Font.GothamBold
+speedNormalBtn.TextSize = 12
+speedNormalBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+speedNormalBtn.BorderSizePixel = 0
+speedNormalBtn.Parent = mainFrame
 
--- Arabic button
-local arabicBtn = Instance.new("TextButton")
-arabicBtn.Size = UDim2.new(0, 160, 0, 50)
-arabicBtn.Position = UDim2.new(0, 200, 0, 120)
-arabicBtn.Text = "🇸🇦 العربية"
-arabicBtn.BackgroundColor3 = Color3.fromRGB(34, 139, 34)
-arabicBtn.TextColor3 = Color3.new(1, 1, 1)
-arabicBtn.Font = Enum.Font.GothamBold
-arabicBtn.TextSize = 16
-arabicBtn.BorderSizePixel = 0
-arabicBtn.Parent = langFrame
+-- Bomb Section
+local bombTitle = Instance.new("TextLabel")
+bombTitle.Size = UDim2.new(0.3, 0, 0, 25)
+bombTitle.Position = UDim2.new(0.37, 0, 0, 55)
+bombTitle.BackgroundTransparency = 1
+bombTitle.Text = "القنبلة"
+bombTitle.TextColor3 = Color3.new(1, 1, 1)
+bombTitle.Font = Enum.Font.GothamBold
+bombTitle.TextSize = 14
+bombTitle.TextXAlignment = Enum.TextXAlignment.Center
+bombTitle.Parent = mainFrame
 
-local arabicCorner = Instance.new("UICorner")
-arabicCorner.CornerRadius = UDim.new(0, 10)
-arabicCorner.Parent = arabicBtn
+local bombOptionalBtn = Instance.new("TextButton")
+bombOptionalBtn.Size = UDim2.new(0.27, 0, 0, 30)
+bombOptionalBtn.Position = UDim2.new(0.39, 0, 0, 85)
+bombOptionalBtn.Text = "بدون قنبلة"
+bombOptionalBtn.TextColor3 = Color3.new(1, 1, 1)
+bombOptionalBtn.Font = Enum.Font.GothamBold
+bombOptionalBtn.TextSize = 12
+bombOptionalBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+bombOptionalBtn.BorderSizePixel = 0
+bombOptionalBtn.Parent = mainFrame
 
-local arabicStroke = Instance.new("UIStroke")
-arabicStroke.Color = Color3.fromRGB(60, 179, 60)
-arabicStroke.Thickness = 1
-arabicStroke.Parent = arabicBtn
+local bombRequiredBtn = Instance.new("TextButton")
+bombRequiredBtn.Size = UDim2.new(0.27, 0, 0, 30)
+bombRequiredBtn.Position = UDim2.new(0.39, 0, 0, 125)
+bombRequiredBtn.Text = "قنبلة اجبارية"
+bombRequiredBtn.TextColor3 = Color3.new(1, 1, 1)
+bombRequiredBtn.Font = Enum.Font.GothamBold
+bombRequiredBtn.TextSize = 12
+bombRequiredBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+bombRequiredBtn.BorderSizePixel = 0
+bombRequiredBtn.Parent = mainFrame
 
--- Hover effects
-englishBtn.MouseEnter:Connect(function()
-    englishBtn.BackgroundColor3 = Color3.fromRGB(90, 150, 200)
-end)
-englishBtn.MouseLeave:Connect(function()
+-- Backward Section  
+local backwardTitle = Instance.new("TextLabel")
+backwardTitle.Size = UDim2.new(0.3, 0, 0, 25)
+backwardTitle.Position = UDim2.new(0.68, 0, 0, 55)
+backwardTitle.BackgroundTransparency = 1
+backwardTitle.Text = "الحركة للخلف"
+backwardTitle.TextColor3 = Color3.new(1, 1, 1)
+backwardTitle.Font = Enum.Font.GothamBold
+backwardTitle.TextSize = 14
+backwardTitle.TextXAlignment = Enum.TextXAlignment.Center
+backwardTitle.Parent = mainFrame
+
+local backwardAutoBtn = Instance.new("TextButton")
+backwardAutoBtn.Size = UDim2.new(0.27, 0, 0, 25)
+backwardAutoBtn.Position = UDim2.new(0.70, 0, 0, 85)
+backwardAutoBtn.Text = "يعتمد على الاوتو"
+backwardAutoBtn.TextColor3 = Color3.new(1, 1, 1)
+backwardAutoBtn.Font = Enum.Font.GothamBold
+backwardAutoBtn.TextSize = 10
+backwardAutoBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+backwardAutoBtn.BorderSizePixel = 0
+backwardAutoBtn.Parent = mainFrame
+
+local backwardAlwaysBtn = Instance.new("TextButton")
+backwardAlwaysBtn.Size = UDim2.new(0.27, 0, 0, 25)
+backwardAlwaysBtn.Position = UDim2.new(0.70, 0, 0, 115)
+backwardAlwaysBtn.Text = "ممنوع دائما"
+backwardAlwaysBtn.TextColor3 = Color3.new(1, 1, 1)
+backwardAlwaysBtn.Font = Enum.Font.GothamBold
+backwardAlwaysBtn.TextSize = 10
+backwardAlwaysBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+backwardAlwaysBtn.BorderSizePixel = 0
+backwardAlwaysBtn.Parent = mainFrame
+
+local backwardNeverBtn = Instance.new("TextButton")
+backwardNeverBtn.Size = UDim2.new(0.27, 0, 0, 25)
+backwardNeverBtn.Position = UDim2.new(0.70, 0, 0, 145)
+backwardNeverBtn.Text = "مسموح دائما"
+backwardNeverBtn.TextColor3 = Color3.new(1, 1, 1)
+backwardNeverBtn.Font = Enum.Font.GothamBold
+backwardNeverBtn.TextSize = 10
+backwardNeverBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+backwardNeverBtn.BorderSizePixel = 0
+backwardNeverBtn.Parent = mainFrame
+
+local okBtn = Instance.new("TextButton")
+okBtn.Size = UDim2.new(0, 100, 0, 35)
+okBtn.Position = UDim2.new(0.5, -50, 0, 220)
+okBtn.Text = "OK"
+okBtn.TextColor3 = Color3.new(1, 1, 1)
+okBtn.Font = Enum.Font.GothamBold
+okBtn.TextSize = 16
+okBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+okBtn.BorderSizePixel = 0
+okBtn.Parent = mainFrame
+
+-- Add corners
+for _, btn in pairs({speedFastBtn, speedNormalBtn, bombOptionalBtn, bombRequiredBtn, backwardAutoBtn, backwardAlwaysBtn, backwardNeverBtn, okBtn}) do
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = btn
+end
+
+-- Selection logic
+local function updateSpeedSelection(selected)
+    speedOption = selected
+    speedFastBtn.BackgroundColor3 = selected == "fast" and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+    speedNormalBtn.BackgroundColor3 = selected == "normal" and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+end
+
+local function updateBombSelection(selected)
+    bombOption = selected
+    bombOptionalBtn.BackgroundColor3 = selected == "optional" and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+    bombRequiredBtn.BackgroundColor3 = selected == "required" and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+end
+
+local function updateBackwardSelection(selected)
+    backwardOption = selected
+    backwardAutoBtn.BackgroundColor3 = selected == "auto" and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+    backwardAlwaysBtn.BackgroundColor3 = selected == "always" and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+    backwardNeverBtn.BackgroundColor3 = selected == "never" and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+end
+
+speedFastBtn.MouseButton1Click:Connect(function() updateSpeedSelection("fast") end)
+speedNormalBtn.MouseButton1Click:Connect(function() updateSpeedSelection("normal") end)
+bombOptionalBtn.MouseButton1Click:Connect(function() updateBombSelection("optional") end)
+bombRequiredBtn.MouseButton1Click:Connect(function() updateBombSelection("required") end)
+backwardAutoBtn.MouseButton1Click:Connect(function() updateBackwardSelection("auto") end)
+backwardAlwaysBtn.MouseButton1Click:Connect(function() updateBackwardSelection("always") end)
+backwardNeverBtn.MouseButton1Click:Connect(function() updateBackwardSelection("never") end)
+
+okBtn.MouseButton1Click:Connect(function()
+    optionsGui:Destroy()
+    
+    -- Language Selection
+    local langGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+    local langFrame = Instance.new("Frame")
+    langFrame.Size = UDim2.new(0, 350, 0, 180)
+    langFrame.Position = UDim2.new(0.5, -175, 0.5, -90)
+    langFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    langFrame.BorderSizePixel = 0
+    langFrame.Parent = langGui
+
+    local langCorner = Instance.new("UICorner")
+    langCorner.CornerRadius = UDim.new(0, 12)
+    langCorner.Parent = langFrame
+
+    local langTitle = Instance.new("TextLabel")
+    langTitle.Size = UDim2.new(1, 0, 0, 45)
+    langTitle.Position = UDim2.new(0, 0, 0, 15)
+    langTitle.BackgroundTransparency = 1
+    langTitle.Text = "Select Language"
+    langTitle.TextColor3 = Color3.new(1, 1, 1)
+    langTitle.Font = Enum.Font.GothamBold
+    langTitle.TextSize = 18
+    langTitle.TextXAlignment = Enum.TextXAlignment.Center
+    langTitle.Parent = langFrame
+
+    local englishBtn = Instance.new("TextButton")
+    englishBtn.Size = UDim2.new(0, 130, 0, 40)
+    englishBtn.Position = UDim2.new(0, 35, 0, 90)
+    englishBtn.Text = "🇺🇸 English"
     englishBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
-end)
+    englishBtn.TextColor3 = Color3.new(1, 1, 1)
+    englishBtn.Font = Enum.Font.GothamBold
+    englishBtn.TextSize = 14
+    englishBtn.BorderSizePixel = 0
+    englishBtn.Parent = langFrame
 
-arabicBtn.MouseEnter:Connect(function()
-    arabicBtn.BackgroundColor3 = Color3.fromRGB(54, 159, 54)
-end)
-arabicBtn.MouseLeave:Connect(function()
+    local arabicBtn = Instance.new("TextButton")
+    arabicBtn.Size = UDim2.new(0, 130, 0, 40)
+    arabicBtn.Position = UDim2.new(0, 185, 0, 90)
+    arabicBtn.Text = "🇸🇦 العربية"
     arabicBtn.BackgroundColor3 = Color3.fromRGB(34, 139, 34)
-end)
+    arabicBtn.TextColor3 = Color3.new(1, 1, 1)
+    arabicBtn.Font = Enum.Font.GothamBold
+    arabicBtn.TextSize = 14
+    arabicBtn.BorderSizePixel = 0
+    arabicBtn.Parent = langFrame
 
-local function initScript(lang)
-    selectedLanguage = lang
-    gui:Destroy()
+    for _, btn in pairs({englishBtn, arabicBtn}) do
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 8)
+        btnCorner.Parent = btn
+    end
 
-    -- Language texts
-    local texts = {
-        en = {
-            title = "zYn.scripts",
-            auto = "Auto: OFF",
-            autoOn = "Auto: ON",
-            bombFound = "Bomb: Found ✓",
-            bombNot = "Bomb: Not Found",
-            backBlock = "Backward: Blocked ✗",
-            backAllow = "Backward: Allowed",
-            checks = "Checks: OFF",
-            checksOn = "Checks: ON",
-            range = "Range:"
-        },
-        ar = {
-            title = "zYn.scripts",
-            auto = "اوتو: مطفي",
-            autoOn = "اوتو: مشتغل",
-            bombFound = "قنبله: موجوده ✓",
-            bombNot = "قنبله: مو موجوده",
-            backBlock = "الخلف: ممنوع ✗",
-            backAllow = "الخلف: مسموح",
-            checks = "تخطي: مطفي",
-            checksOn = "تخطي: مشتغل",
-            range = "المسافة:"
+    local function initScript(lang)
+        langGui:Destroy()
+
+        local texts = {
+            en = {title = "zYn.scripts", auto = "Auto: OFF", autoOn = "Auto: ON", bombFound = "Bomb: Found ✓", bombNot = "Bomb: Not Found", backBlock = "Backward: Blocked ✗", backAllow = "Backward: Allowed", checks = "Checks: OFF", checksOn = "Checks: ON", range = "Range:"},
+            ar = {title = "zYn.scripts", auto = "اوتو: مطفي", autoOn = "اوتو: مشتغل", bombFound = "قنبله: موجوده ✓", bombNot = "قنبله: مو موجوده", backBlock = "الخلف: ممنوع ✗", backAllow = "الخلف: مسموح", checks = "تخطي: مطفي", checksOn = "تخطي: مشتغل", range = "المسافة:"}
         }
-    }
-    local t = texts[lang]
+        local t = texts[lang]
 
-    -- Services
-    local RunService = game:GetService("RunService")
-    local UserInputService = game:GetService("UserInputService")
+        local Character, HRP, Humanoid = LocalPlayer.Character, nil, nil
+        local enabled, checksEnabled = false, false
+        local cfSpeed = speedOption == "fast" and 18 or 16
+        local detectionRange = 6
+        local dragging, dragInput, dragStart, startPos
+        local movementConnection, backwardBlockConnection, isBackwardBlocked = nil, nil, false
 
-    -- Variables
-    local Character, HRP, Humanoid = LocalPlayer.Character, nil, nil
-    local enabled, checksEnabled = false, false
-    local cfSpeed, rotateSpeed = 18, 0 -- Reduced speed and removed rotation
-    local detectionRange = 6 -- Default range changed to 6 studs
-    local dragging, dragInput, dragStart, startPos
-    local movementConnection, backwardBlockConnection
-    local isBackwardBlocked = false
+        local function setupChar()
+            Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+            HRP = Character:WaitForChild("HumanoidRootPart")
+            Humanoid = Character:WaitForChild("Humanoid")
+        end
+        setupChar()
 
-    -- Setup character
-    local function setupChar()
-        Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        HRP = Character:WaitForChild("HumanoidRootPart")
-        Humanoid = Character:WaitForChild("Humanoid")
-    end
-    setupChar()
-
-    -- Check functions
-    local function hasBomb()
-        local bp = LocalPlayer:FindFirstChild("Backpack")
-        if bp then
-            for _, item in pairs(bp:GetChildren()) do
-                if item:IsA("Tool") and (string.find(string.lower(item.Name), "bomb") or string.find(string.lower(item.Name), "grenade")) then
-                    return true
+        local function hasBomb()
+            if bombOption == "optional" then return true end
+            local bp = LocalPlayer:FindFirstChild("Backpack")
+            if bp then
+                for _, item in pairs(bp:GetChildren()) do
+                    if item:IsA("Tool") and (item.Name:lower():find("bomb") or item.Name:lower():find("grenade")) then
+                        return true
+                    end
                 end
             end
-        end
-        if Character then
-            for _, item in pairs(Character:GetChildren()) do
-                if item:IsA("Tool") and (string.find(string.lower(item.Name), "bomb") or string.find(string.lower(item.Name), "grenade")) then
-                    return true
+            if Character then
+                for _, item in pairs(Character:GetChildren()) do
+                    if item:IsA("Tool") and (item.Name:lower():find("bomb") or item.Name:lower():find("grenade")) then
+                        return true
+                    end
                 end
             end
+            return false
         end
-        return false
-    end
 
-    local function getNearest()
-        local nearest, dist = nil, math.huge
-        for _, plr in pairs(Players:GetPlayers()) do
-            if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                local humanoid = plr.Character:FindFirstChild("Humanoid")
+        local function getNearest()
+            local nearest, dist = nil, math.huge
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    local d = (HRP.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                    if d <= detectionRange then
+                        if checksEnabled then
+                            local humanoid = plr.Character:FindFirstChild("Humanoid")
+                            if humanoid and humanoid.Health <= 0 then continue end
+                            local rayParams = RaycastParams.new()
+                            rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+                            rayParams.FilterDescendantsInstances = {Character}
+                            local result = workspace:Raycast(HRP.Position, (plr.Character.HumanoidRootPart.Position - HRP.Position), rayParams)
+                            if result and result.Instance and not result.Instance:IsDescendantOf(plr.Character) then continue end
+                        end
+                        if d < dist then dist, nearest = d, plr end
+                    end
+                end
+            end
+            return nearest
+        end
+
+        -- Create GUI
+        local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 170, 0, bombOption == "required" and 130 or 110)
+        frame.Position = UDim2.new(0.4, 0, 0.8, 0)
+        frame.BackgroundTransparency = 1
+        frame.Active = true
+        frame.Selectable = true
+        frame.Parent = gui
+
+        -- Background with gradient
+        local bgFrame = Instance.new("Frame")
+        bgFrame.Size = UDim2.new(1, 0, 1, 0)
+        bgFrame.BorderSizePixel = 0
+        bgFrame.Parent = frame
+
+        local bgGradient = Instance.new("UIGradient")
+        bgGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 25, 75)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 15, 55)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 10, 35))
+        }
+        bgGradient.Rotation = 45
+        bgGradient.Parent = bgFrame
+
+        local frameCorner = Instance.new("UICorner")
+        frameCorner.CornerRadius = UDim.new(0, 12)
+        frameCorner.Parent = bgFrame
+
+        local frameStroke = Instance.new("UIStroke")
+        frameStroke.Color = Color3.fromRGB(120, 80, 200)
+        frameStroke.Thickness = 2
+        frameStroke.Transparency = 0.3
+        frameStroke.Parent = bgFrame
+
+        -- Auto Button with premium design
+        local autoBtn = Instance.new("TextButton")
+        autoBtn.Size = UDim2.new(1, -12, 0, 28)
+        autoBtn.Position = UDim2.new(0, 6, 0, 6)
+        autoBtn.Text = t.auto
+        autoBtn.TextColor3 = Color3.new(1, 1, 1)
+        autoBtn.Font = Enum.Font.GothamBold
+        autoBtn.TextSize = 13
+        autoBtn.BorderSizePixel = 0
+        autoBtn.BackgroundTransparency = 1
+        autoBtn.Parent = frame
+
+        local autoBtnBg = Instance.new("Frame")
+        autoBtnBg.Size = UDim2.new(1, 0, 1, 0)
+        autoBtnBg.BorderSizePixel = 0
+        autoBtnBg.ZIndex = autoBtn.ZIndex - 1
+        autoBtnBg.Parent = autoBtn
+
+        local autoBtnGradient = Instance.new("UIGradient")
+        autoBtnGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 60, 80)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 60))
+        }
+        autoBtnGradient.Rotation = 90
+        autoBtnGradient.Parent = autoBtnBg
+
+        local autoBtnCorner = Instance.new("UICorner")
+        autoBtnCorner.CornerRadius = UDim.new(0, 6)
+        autoBtnCorner.Parent = autoBtnBg
+
+        local autoBtnStroke = Instance.new("UIStroke")
+        autoBtnStroke.Color = Color3.fromRGB(100, 100, 140)
+        autoBtnStroke.Thickness = 1
+        autoBtnStroke.Parent = autoBtnBg
+
+        -- Bomb Label (only if required)
+        local bombLabel = Instance.new("TextLabel")
+        if bombOption == "required" then
+            bombLabel.Size = UDim2.new(1, -12, 0, 14)
+            bombLabel.Position = UDim2.new(0, 6, 0, 38)
+            bombLabel.Text = t.bombNot
+            bombLabel.BackgroundTransparency = 1
+            bombLabel.TextColor3 = Color3.fromRGB(255, 120, 120)
+            bombLabel.Font = Enum.Font.Gotham
+            bombLabel.TextSize = 9
+            bombLabel.TextXAlignment = Enum.TextXAlignment.Center
+            bombLabel.Parent = frame
+        end
+
+        -- Backward Label
+        local backLabel = Instance.new("TextLabel")
+        backLabel.Size = UDim2.new(1, -12, 0, 14)
+        backLabel.Position = UDim2.new(0, 6, 0, bombOption == "required" and 56 or 42)
+        backLabel.Text = t.backAllow
+        backLabel.BackgroundTransparency = 1
+        backLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
+        backLabel.Font = Enum.Font.Gotham
+        backLabel.TextSize = 9
+        backLabel.TextXAlignment = Enum.TextXAlignment.Center
+        backLabel.Parent = frame
+
+        -- Checks Button
+        local checkBtn = Instance.new("TextButton")
+        checkBtn.Size = UDim2.new(1, -12, 0, 22)
+        checkBtn.Position = UDim2.new(0, 6, 0, bombOption == "required" and 74 or 60)
+        checkBtn.Text = t.checks
+        checkBtn.TextColor3 = Color3.new(1, 1, 1)
+        checkBtn.Font = Enum.Font.GothamBold
+        checkBtn.TextSize = 10
+        checkBtn.BorderSizePixel = 0
+        checkBtn.BackgroundTransparency = 1
+        checkBtn.Parent = frame
+
+        local checkBtnBg = Instance.new("Frame")
+        checkBtnBg.Size = UDim2.new(1, 0, 1, 0)
+        checkBtnBg.BorderSizePixel = 0
+        checkBtnBg.ZIndex = checkBtn.ZIndex - 1
+        checkBtnBg.Parent = checkBtn
+
+        local checkBtnGradient = Instance.new("UIGradient")
+        checkBtnGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 60, 80)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 60))
+        }
+        checkBtnGradient.Rotation = 90
+        checkBtnGradient.Parent = checkBtnBg
+
+        local checkBtnCorner = Instance.new("UICorner")
+        checkBtnCorner.CornerRadius = UDim.new(0, 5)
+        checkBtnCorner.Parent = checkBtnBg
+
+        -- Range Section
+        local rangeLabel = Instance.new("TextLabel")
+        rangeLabel.Size = UDim2.new(0, 40, 0, 18)
+        rangeLabel.Position = UDim2.new(0, 6, 0, bombOption == "required" and 102 or 88)
+        rangeLabel.Text = t.range
+        rangeLabel.BackgroundTransparency = 1
+        rangeLabel.TextColor3 = Color3.fromRGB(200, 220, 255)
+        rangeLabel.Font = Enum.Font.Gotham
+        rangeLabel.TextSize = 8
+        rangeLabel.Parent = frame
+
+        local rangeInput = Instance.new("TextBox")
+        rangeInput.Size = UDim2.new(0, 120, 0, 18)
+        rangeInput.Position = UDim2.new(0, 44, 0, bombOption == "required" and 102 or 88)
+        rangeInput.Text = tostring(detectionRange)
+        rangeInput.TextColor3 = Color3.new(1, 1, 1)
+        rangeInput.Font = Enum.Font.Gotham
+        rangeInput.TextSize = 9
+        rangeInput.BorderSizePixel = 0
+        rangeInput.TextXAlignment = Enum.TextXAlignment.Center
+        rangeInput.BackgroundTransparency = 1
+        rangeInput.Parent = frame
+
+        local rangeBg = Instance.new("Frame")
+        rangeBg.Size = UDim2.new(1, 0, 1, 0)
+        rangeBg.BorderSizePixel = 0
+        rangeBg.ZIndex = rangeInput.ZIndex - 1
+        rangeBg.Parent = rangeInput
+
+        local rangeBgGradient = Instance.new("UIGradient")
+        rangeBgGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 50, 90)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 30, 70))
+        }
+        rangeBgGradient.Parent = rangeBg
+
+        local rangeCorner = Instance.new("UICorner")
+        rangeCorner.CornerRadius = UDim.new(0, 4)
+        rangeCorner.Parent = rangeBg
+
+        -- Drag functionality
+        local function updateDrag(input)
+            if input == dragInput and dragging then
+                local delta = input.Position - dragStart
+                frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            end
+        end
+
+        frame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging, dragStart, startPos = true, input.Position, frame.Position
+                local conn
+                conn = input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                        conn:Disconnect()
+                    end
+                end)
+            end
+        end)
+
+        frame.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then 
+                dragInput = input 
+            end
+        end)
+
+        UserInputService.InputChanged:Connect(updateDrag)
+
+        -- Core functions
+        local function startBackwardBlock()
+            if backwardBlockConnection then return end
+            backwardBlockConnection = RunService.Heartbeat:Connect(function()
+                local shouldBlock = false
                 
-                local d = (HRP.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                if backwardOption == "always" then
+                    shouldBlock = true
+                elseif backwardOption == "auto" then
+                    shouldBlock = enabled and hasBomb()
+                elseif backwardOption == "never" then
+                    shouldBlock = false
+                end
                 
-                -- Only consider players within detection range
-                if d > detectionRange then continue end
-                
-                if checksEnabled then
-                    if humanoid and humanoid.Health <= 0 then continue end
+                if shouldBlock and Humanoid and HRP then
+                    local moveVector = Humanoid.MoveDirection
+                    if moveVector.Magnitude > 0 then
+                        local dotProduct = HRP.CFrame.LookVector:Dot(moveVector.Unit)
+                        if dotProduct < -0.1 then
+                            local sideways = moveVector.Unit:Dot(HRP.CFrame.RightVector)
+                            Humanoid:Move(math.abs(sideways) > 0.1 and HRP.CFrame.RightVector * sideways or Vector3.new(0, 0, 0), false)
+                        end
+                    end
                     
-                    local rayParams = RaycastParams.new()
-                    rayParams.FilterType = Enum.RaycastFilterType.Blacklist
-                    rayParams.FilterDescendantsInstances = {Character}
-                    local result = workspace:Raycast(HRP.Position, (plr.Character.HumanoidRootPart.Position - HRP.Position), rayParams)
-                    if result and result.Instance and not result.Instance:IsDescendantOf(plr.Character) then continue end
-                end
-                
-                if d < dist then
-                    dist, nearest = d, plr
-                end
-            end
-        end
-        return nearest
-    end
-
-    -- Create main GUI
-    local mainGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Size = UDim2.new(0, 170, 0, 130)
-    mainFrame.Position = UDim2.new(0.4, 0, 0.8, 0)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    mainFrame.BorderSizePixel = 0
-    mainFrame.Active = true
-    mainFrame.Selectable = true
-    mainFrame.Parent = mainGui
-
-    local frameCorner = Instance.new("UICorner")
-    frameCorner.CornerRadius = UDim.new(0, 12)
-    frameCorner.Parent = mainFrame
-
-    local frameStroke = Instance.new("UIStroke")
-    frameStroke.Color = Color3.fromRGB(70, 70, 70)
-    frameStroke.Thickness = 2
-    frameStroke.Parent = mainFrame
-
-    -- UI Elements
-    local autoBtn = Instance.new("TextButton")
-    autoBtn.Size = UDim2.new(1, -10, 0, 30)
-    autoBtn.Position = UDim2.new(0, 5, 0, 5)
-    autoBtn.Text = t.auto
-    autoBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    autoBtn.TextColor3 = Color3.new(1, 1, 1)
-    autoBtn.Font = Enum.Font.GothamBold
-    autoBtn.TextSize = 14
-    autoBtn.BorderSizePixel = 0
-    autoBtn.Parent = mainFrame
-
-    local autoBtnCorner = Instance.new("UICorner")
-    autoBtnCorner.CornerRadius = UDim.new(0, 6)
-    autoBtnCorner.Parent = autoBtn
-
-    local bombLabel = Instance.new("TextLabel")
-    bombLabel.Size = UDim2.new(1, -10, 0, 15)
-    bombLabel.Position = UDim2.new(0, 5, 0, 38)
-    bombLabel.Text = t.bombNot
-    bombLabel.BackgroundTransparency = 1
-    bombLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-    bombLabel.Font = Enum.Font.Gotham
-    bombLabel.TextSize = 10
-    bombLabel.TextXAlignment = Enum.TextXAlignment.Center
-    bombLabel.Parent = mainFrame
-
-    local backLabel = Instance.new("TextLabel")
-    backLabel.Size = UDim2.new(1, -10, 0, 15)
-    backLabel.Position = UDim2.new(0, 5, 0, 55)
-    backLabel.Text = t.backAllow
-    backLabel.BackgroundTransparency = 1
-    backLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-    backLabel.Font = Enum.Font.Gotham
-    backLabel.TextSize = 10
-    backLabel.TextXAlignment = Enum.TextXAlignment.Center
-    backLabel.Parent = mainFrame
-
-    local checkBtn = Instance.new("TextButton")
-    checkBtn.Size = UDim2.new(1, -10, 0, 22)
-    checkBtn.Position = UDim2.new(0, 5, 0, 75)
-    checkBtn.Text = t.checks
-    checkBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    checkBtn.TextColor3 = Color3.new(1, 1, 1)
-    checkBtn.Font = Enum.Font.GothamBold
-    checkBtn.TextSize = 10
-    checkBtn.BorderSizePixel = 0
-    checkBtn.Parent = mainFrame
-
-    local checkBtnCorner = Instance.new("UICorner")
-    checkBtnCorner.CornerRadius = UDim.new(0, 6)
-    checkBtnCorner.Parent = checkBtn
-
-    -- Range input section
-    local rangeLabel = Instance.new("TextLabel")
-    rangeLabel.Size = UDim2.new(0, 45, 0, 20)
-    rangeLabel.Position = UDim2.new(0, 5, 0, 102)
-    rangeLabel.Text = t.range
-    rangeLabel.BackgroundTransparency = 1
-    rangeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    rangeLabel.Font = Enum.Font.Gotham
-    rangeLabel.TextSize = 9
-    rangeLabel.TextXAlignment = Enum.TextXAlignment.Left
-    rangeLabel.Parent = mainFrame
-
-    local rangeInput = Instance.new("TextBox")
-    rangeInput.Size = UDim2.new(0, 115, 0, 20)
-    rangeInput.Position = UDim2.new(0, 50, 0, 102)
-    rangeInput.Text = tostring(detectionRange)
-    rangeInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    rangeInput.TextColor3 = Color3.new(1, 1, 1)
-    rangeInput.Font = Enum.Font.Gotham
-    rangeInput.TextSize = 10
-    rangeInput.BorderSizePixel = 0
-    rangeInput.PlaceholderText = "6"
-    rangeInput.TextXAlignment = Enum.TextXAlignment.Center
-    rangeInput.Parent = mainFrame
-
-    local rangeInputCorner = Instance.new("UICorner")
-    rangeInputCorner.CornerRadius = UDim.new(0, 4)
-    rangeInputCorner.Parent = rangeInput
-
-    local titleLbl = Instance.new("TextLabel")
-    titleLbl.Size = UDim2.new(1, 0, 0, 20)
-    titleLbl.Position = UDim2.new(0, 0, 0, -25)
-    titleLbl.Text = t.title
-    titleLbl.BackgroundTransparency = 1
-    titleLbl.TextColor3 = Color3.new(1, 1, 1)
-    titleLbl.Font = Enum.Font.GothamBold
-    titleLbl.TextSize = 12
-    titleLbl.TextXAlignment = Enum.TextXAlignment.Center
-    titleLbl.Parent = mainFrame
-
-    -- Drag functionality
-    local function updateDrag(input)
-        if input == dragInput and dragging then
-            local delta = input.Position - dragStart
-            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end
-
-    mainFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = mainFrame.Position
-            
-            local conn
-            conn = input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                    conn:Disconnect()
-                end
-            end)
-        end
-    end)
-
-    mainFrame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(updateDrag)
-
-    -- Core functions
-    local function startBackwardBlock()
-        if backwardBlockConnection then return end
-        backwardBlockConnection = RunService.Heartbeat:Connect(function()
-            if enabled and hasBomb() and Humanoid and HRP then
-                local moveVector = Humanoid.MoveDirection
-                if moveVector.Magnitude > 0 then
-                    local dotProduct = HRP.CFrame.LookVector:Dot(moveVector.Unit)
-                    if dotProduct < -0.1 then
-                        local sideways = moveVector.Unit:Dot(HRP.CFrame.RightVector)
-                        if math.abs(sideways) > 0.1 then
-                            Humanoid:Move(HRP.CFrame.RightVector * sideways, false)
-                        else
-                            Humanoid:Move(Vector3.new(0, 0, 0), false)
+                    -- Mobile backward block
+                    local camera = workspace.CurrentCamera
+                    if camera and camera.CameraType == Enum.CameraType.Custom then
+                        local humanoidState = Humanoid:GetState()
+                        if humanoidState == Enum.HumanoidStateType.Running then
+                            local moveDir = Humanoid.MoveDirection
+                            if moveDir.Magnitude > 0 then
+                                local cameraCFrame = camera.CFrame
+                                local cameraLookVector = cameraCFrame.LookVector
+                                local relativeMoveDir = cameraCFrame:VectorToObjectSpace(Vector3.new(moveDir.X, 0, moveDir.Z))
+                                if relativeMoveDir.Z > 0.1 then -- Moving backward relative to camera
+                                    Humanoid:Move(Vector3.new(0, 0, 0), false)
+                                end
+                            end
                         end
                     end
                 end
-            end
-        end)
-    end
-
-    local function stopBackwardBlock()
-        if backwardBlockConnection then
-            backwardBlockConnection:Disconnect()
-            backwardBlockConnection = nil
+            end)
         end
-    end
 
-    local function updateStatus()
-        local hasBombCheck = hasBomb()
-        bombLabel.Text = hasBombCheck and t.bombFound or t.bombNot
-        bombLabel.TextColor3 = hasBombCheck and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
-        
-        local shouldBlock = enabled and hasBombCheck
-        if shouldBlock then
-            backLabel.Text = t.backBlock
-            backLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-            if not isBackwardBlocked then
-                startBackwardBlock()
-                isBackwardBlocked = true
-            end
-        else
-            backLabel.Text = t.backAllow
-            backLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-            if isBackwardBlocked then
-                stopBackwardBlock()
-                isBackwardBlocked = false
+        local function stopBackwardBlock()
+            if backwardBlockConnection then
+                backwardBlockConnection:Disconnect()
+                backwardBlockConnection = nil
             end
         end
-        return hasBombCheck
-    end
 
-    local function startMovement()
-        if movementConnection then return end
-        movementConnection = RunService.Heartbeat:Connect(function(dt)
-            if enabled and HRP and Humanoid then
-                if not updateStatus() then
-                    Humanoid.WalkSpeed = 16
-                    Humanoid:MoveTo(HRP.Position)
-                    return
-                end
-                
-                local target = getNearest()
-                if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                    local targetPos = target.Character.HumanoidRootPart.Position
-                    local currentPos = HRP.Position
-                    local distance = (targetPos - currentPos).Magnitude
-                    local direction = (Vector3.new(targetPos.X, currentPos.Y, targetPos.Z) - currentPos).Unit
-                    
-                    if distance > 2 then
-                        local newPos = currentPos + (direction * cfSpeed * dt)
-                        newPos = Vector3.new(newPos.X, currentPos.Y, newPos.Z)
-                        local lookDir = (targetPos - newPos).Unit
-                        HRP.CFrame = CFrame.new(newPos, newPos + Vector3.new(lookDir.X, 0, lookDir.Z))
-                        Humanoid.WalkSpeed = cfSpeed
-                        Humanoid:MoveTo(targetPos)
-                    else
-                        Humanoid.WalkSpeed = cfSpeed / 2
-                        Humanoid:MoveTo(targetPos)
-                    end
-                    
-                    -- Removed rotation code for less suspicious movement
-                else
-                    Humanoid.WalkSpeed = 16
-                    Humanoid:MoveTo(HRP.Position)
-                end
+        local function updateStatus()
+            local hasBombCheck = hasBomb()
+            bombLabel.Text = hasBombCheck and t.bombFound or t.bombNot
+            bombLabel.TextColor3 = hasBombCheck and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+            local shouldBlock = enabled and hasBombCheck
+            if shouldBlock then
+                backLabel.Text = t.backBlock
+                backLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                if not isBackwardBlocked then startBackwardBlock() isBackwardBlocked = true end
             else
-                updateStatus()
+                backLabel.Text = t.backAllow
+                backLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+                if isBackwardBlocked then stopBackwardBlock() isBackwardBlocked = false end
             end
+            return hasBombCheck
+        end
+
+        local function startMovement()
+            if movementConnection then return end
+            movementConnection = RunService.Heartbeat:Connect(function(dt)
+                if enabled and HRP and Humanoid then
+                    if not updateStatus() then
+                        Humanoid.WalkSpeed = 16
+                        Humanoid:MoveTo(HRP.Position)
+                        return
+                    end
+                    local target = getNearest()
+                    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                        local targetPos = target.Character.HumanoidRootPart.Position
+                        local currentPos = HRP.Position
+                        local distance = (targetPos - currentPos).Magnitude
+                        local direction = (Vector3.new(targetPos.X, currentPos.Y, targetPos.Z) - currentPos).Unit
+                        
+                        if speedOption == "normal" then
+                            -- Normal speed - just use MoveTo without CFrame manipulation
+                            Humanoid.WalkSpeed = 16
+                            Humanoid:MoveTo(targetPos)
+                        else
+                            -- Fast speed - use CFrame manipulation
+                            if distance > 2 then
+                                local newPos = currentPos + (direction * cfSpeed * dt)
+                                newPos = Vector3.new(newPos.X, currentPos.Y, newPos.Z)
+                                local lookDir = (targetPos - newPos).Unit
+                                HRP.CFrame = CFrame.new(newPos, newPos + Vector3.new(lookDir.X, 0, lookDir.Z))
+                                Humanoid.WalkSpeed = cfSpeed
+                                Humanoid:MoveTo(targetPos)
+                            else
+                                Humanoid.WalkSpeed = cfSpeed / 2
+                                Humanoid:MoveTo(targetPos)
+                            end
+                        end
+                    else
+                        Humanoid.WalkSpeed = 16
+                        Humanoid:MoveTo(HRP.Position)
+                    end
+                else
+                    updateStatus()
+                end
+            end)
+        end
+
+        local function stopMovement()
+            if movementConnection then
+                movementConnection:Disconnect()
+                movementConnection = nil
+            end
+            if Humanoid then Humanoid.WalkSpeed = 16 Humanoid:MoveTo(HRP.Position) end
+        end
+
+        -- Button animations and events
+        local TweenService = game:GetService("TweenService")
+        local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+
+        -- Auto button animations
+        autoBtn.MouseEnter:Connect(function()
+            TweenService:Create(autoBtnBg, tweenInfo, {Size = UDim2.new(1.05, 0, 1.1, 0), Position = UDim2.new(-0.025, 0, -0.05, 0)}):Play()
+            TweenService:Create(autoBtnStroke, tweenInfo, {Color = Color3.fromRGB(150, 150, 200)}):Play()
         end)
-    end
+        autoBtn.MouseLeave:Connect(function()
+            TweenService:Create(autoBtnBg, tweenInfo, {Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0)}):Play()
+            TweenService:Create(autoBtnStroke, tweenInfo, {Color = Color3.fromRGB(100, 100, 140)}):Play()
+        end)
 
-    local function stopMovement()
-        if movementConnection then
-            movementConnection:Disconnect()
-            movementConnection = nil
-        end
-        if Humanoid then
-            Humanoid.WalkSpeed = 16
-            Humanoid:MoveTo(HRP.Position)
-        end
-    end
+        -- Check button animations
+        checkBtn.MouseEnter:Connect(function()
+            TweenService:Create(checkBtnBg, tweenInfo, {Size = UDim2.new(1.03, 0, 1.1, 0), Position = UDim2.new(-0.015, 0, -0.05, 0)}):Play()
+        end)
+        checkBtn.MouseLeave:Connect(function()
+            TweenService:Create(checkBtnBg, tweenInfo, {Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0)}):Play()
+        end)
 
-    -- Events
-    autoBtn.MouseButton1Click:Connect(function()
-        enabled = not enabled
-        autoBtn.Text = enabled and t.autoOn or t.auto
-        autoBtn.BackgroundColor3 = enabled and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
-        updateStatus()
-        if enabled then startMovement() else stopMovement() end
-    end)
+        -- Events
+        autoBtn.MouseButton1Click:Connect(function()
+            enabled = not enabled
+            autoBtn.Text = enabled and t.autoOn or t.auto
+            
+            -- Button state animation
+            local targetGradient = enabled and ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 180, 80)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 140, 60))
+            } or ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 60, 80)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 60))
+            }
+            
+            autoBtnGradient.Color = targetGradient
+            updateStatus()
+            if enabled then startMovement() else stopMovement() end
+        end)
 
-    checkBtn.MouseButton1Click:Connect(function()
-        checksEnabled = not checksEnabled
-        checkBtn.Text = checksEnabled and t.checksOn or t.checks
-        checkBtn.BackgroundColor3 = checksEnabled and Color3.fromRGB(0, 120, 200) or Color3.fromRGB(40, 40, 40)
-    end)
+        checkBtn.MouseButton1Click:Connect(function()
+            checksEnabled = not checksEnabled
+            checkBtn.Text = checksEnabled and t.checksOn or t.checks
+            
+            local targetGradient = checksEnabled and ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 120, 220)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 180))
+            } or ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 60, 80)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 60))
+            }
+            
+            checkBtnGradient.Color = targetGradient
+        end)
 
-    -- Range input event
-    rangeInput.FocusLost:Connect(function()
-        local newRange = tonumber(rangeInput.Text)
-        if newRange and newRange > 0 and newRange <= 1000 then
-            detectionRange = newRange
-        else
+        rangeInput.FocusLost:Connect(function()
+            local newRange = tonumber(rangeInput.Text)
+            detectionRange = (newRange and newRange > 0 and newRange <= 1000) and newRange or detectionRange
             rangeInput.Text = tostring(detectionRange)
-        end
-    end)
+        end)
 
-    -- Respawn handler (modified to keep auto state)
-    LocalPlayer.CharacterAdded:Connect(function(char)
-        stopMovement()
-        stopBackwardBlock()
-        -- Keep enabled state - don't reset to false
-        isBackwardBlocked = false
-        -- Don't reset button text and color
-        setupChar()
-        wait(1)
-        updateStatus()
-        -- Restart movement if it was enabled
-        if enabled then
-            startMovement()
-        end
-    end)
+        LocalPlayer.CharacterAdded:Connect(function()
+            stopMovement() stopBackwardBlock() isBackwardBlocked = false setupChar() wait(1) updateStatus()
+            if enabled then startMovement() end
+        end)
 
-    -- Initialize
-    spawn(function()
-        while wait(2) do
-            if not enabled then updateStatus() end
-        end
-    end)
+        spawn(function() while wait(2) do if not enabled then updateStatus() end end end)
+        updateStatus() startMovement()
+    end
 
-    updateStatus()
-    startMovement()
-end
-
-englishBtn.MouseButton1Click:Connect(function() initScript("en") end)
-arabicBtn.MouseButton1Click:Connect(function() initScript("ar") end)
+    englishBtn.MouseButton1Click:Connect(function() initScript("en") end)
+    arabicBtn.MouseButton1Click:Connect(function() initScript("ar") end)
+end)
